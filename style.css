@@ -1,0 +1,165 @@
+:root{
+  --bg:#10151b;
+  --panel:#17212b;
+  --panel2:#202d38;
+  --ink:#eef4f8;
+  --muted:#93a7b6;
+  --line:rgba(255,255,255,.08);
+  --accent:#56c7ff;
+  --good:#68d391;
+  --bad:#ff6b6b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{
+  background:linear-gradient(135deg,#11171f,#17202a 48%,#11161c);
+  color:var(--ink);
+  font:14px/1.45 system-ui,Segoe UI,Roboto,Arial,sans-serif;
+  padding:18px;
+  user-select:none;
+}
+button,input,select{font:inherit}
+.app{
+  display:grid;
+  grid-template-columns:minmax(720px,980px) 310px;
+  gap:18px;
+  max-width:1320px;
+  margin:0 auto;
+}
+.workspace,.panel,.graphPanel{
+  background:var(--panel);
+  border:1px solid var(--line);
+  box-shadow:0 18px 42px rgba(0,0,0,.28);
+}
+.workspace{border-radius:8px;padding:16px}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:flex-start;
+  margin-bottom:14px;
+}
+h1{font-size:22px;line-height:1.1;margin:0 0 4px}
+.sub{margin:0;color:var(--muted);font-size:13px}
+.readouts{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(92px,1fr));
+  gap:8px;
+  min-width:250px;
+}
+.readouts div{
+  background:var(--panel2);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:9px 10px;
+}
+.readouts span{display:block;color:var(--muted);font-size:12px}
+.readouts b{font-variant-numeric:tabular-nums;font-size:16px}
+.canvasRow{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start}
+.fieldPanel{width:600px;max-width:100%}
+canvas{
+  display:block;
+  background:#071018;
+  border-radius:8px;
+}
+#cv{
+  width:600px;
+  height:600px;
+  cursor:crosshair;
+  touch-action:none;
+}
+.thermalLegend{
+  display:grid;
+  grid-template-columns:auto 1fr auto auto;
+  align-items:center;
+  gap:8px;
+  color:var(--muted);
+  font-size:12px;
+  margin-top:10px;
+  font-variant-numeric:tabular-nums;
+}
+.thermalRamp{
+  height:12px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,.16);
+  background:linear-gradient(90deg,#1e40af 0%,#22d3ee 24%,#facc15 48%,#f97316 68%,#ef4444 84%,#991b1b 100%);
+}
+.graphPanel{
+  border-radius:8px;
+  padding:12px;
+  min-width:260px;
+}
+.panelTitle{
+  color:var(--muted);
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  font-weight:700;
+  margin-bottom:8px;
+}
+#massGraph{width:100%;height:230px}
+.legend{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:12px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.legend .hot{background:#ffd166}.legend .object{background:#d9f4ff}
+.legend .insul{background:#8b5e34}.legend .cooler{background:#36d0ff}
+.panel{
+  border-radius:8px;
+  padding:16px;
+  align-self:start;
+}
+.section{margin-bottom:15px}
+.section label{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  color:var(--muted);
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.035em;
+  font-weight:700;
+  margin-bottom:8px;
+}
+.section label b{color:var(--ink);font-weight:700;text-transform:none;letter-spacing:0}
+select{
+  width:100%;
+  border:1px solid var(--line);
+  background:var(--panel2);
+  color:var(--ink);
+  border-radius:8px;
+  padding:10px 11px;
+}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.segmented,.toolGrid,.buttonGrid{display:grid;gap:8px}
+.segmented{grid-template-columns:1fr 1fr}
+.toolGrid{grid-template-columns:1fr 1fr}
+button{
+  border:0;
+  border-radius:8px;
+  min-height:39px;
+  padding:9px 10px;
+  color:#06121d;
+  background:var(--accent);
+  font-weight:750;
+  cursor:pointer;
+}
+button.ghost,.segmented button,.toolGrid button{
+  background:var(--panel2);
+  color:var(--ink);
+  border:1px solid var(--line);
+}
+button.active{
+  background:#18384a;
+  color:#d9f4ff;
+  border-color:rgba(86,199,255,.7);
+}
+button.danger{background:#ff7c7c;color:#270606}
+.buttonGrid{grid-template-columns:1fr 1fr;margin-top:8px}
+.buttonGrid .wide{grid-column:1/-1}
+@media (max-width:1100px){
+  .app{grid-template-columns:1fr}
+  .panel{order:-1}
+  .canvasRow{grid-template-columns:1fr}
+  .fieldPanel{width:min(100%,600px)}
+  #cv{width:100%;height:auto;aspect-ratio:1}
+  .readouts{min-width:0}
+}

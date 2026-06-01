@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тепловая песочница</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <section class="workspace">
+      <div class="topbar">
+        <div>
+          <h1>Тепловая песочница</h1>
+          <p class="sub">Энтальпийная модель фазового перехода на двумерной сетке</p>
+        </div>
+        <div class="readouts">
+          <div><span>Время</span><b id="timeReadout">0.0 c</b></div>
+          <div><span>Масса</span><b id="massReadout">100%</b></div>
+        </div>
+      </div>
+
+      <div class="canvasRow">
+        <div class="fieldPanel">
+          <canvas id="cv" aria-label="Тепловое поле"></canvas>
+          <div class="thermalLegend" aria-label="Шкала температуры">
+            <span id="tempScaleMin">-- °C</span>
+            <div class="thermalRamp"></div>
+            <span id="tempScaleMax">-- °C</span>
+          </div>
+        </div>
+        <aside class="graphPanel">
+          <div class="panelTitle">Масса объекта</div>
+          <canvas id="massGraph" aria-label="График массы объекта"></canvas>
+          <div class="legend">
+            <span><i class="hot"></i>источник</span>
+            <span><i class="object"></i>объект</span>
+            <span><i class="insul"></i>изолятор</span>
+            <!-- <span><i class="cooler"></i>охладитель</span> -->
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="section">
+        <label for="materialSelect">Материал объекта</label>
+        <select id="materialSelect"></select>
+      </div>
+
+      <div class="section split">
+        <label>Форма</label>
+        <div class="segmented" id="shapeControls">
+          <button type="button" data-shape="square" class="active">Квадрат</button>
+          <button type="button" data-shape="circle">Круг</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <label for="powerSlider">Мощность источников <b id="powerValue"></b></label>
+        <input id="powerSlider" type="range" min="10000000" max="200000000" step="1000000">
+      </div>
+
+      <div class="section">
+        <label for="ambientSlider">dT среды <b id="ambientValue"></b></label>
+        <input id="ambientSlider" type="range" min="-10" max="10" step="0.1">
+      </div>
+
+      <div class="section">
+        <label for="sizeSlider">Размер объекта <b id="sizeValue"></b></label>
+        <input id="sizeSlider" type="range" min="0.01" max="0.08" step="0.001">
+      </div>
+
+      <div class="section">
+        <label for="brushSlider">Кисть <b id="brushValue"></b></label>
+        <input id="brushSlider" type="range" min="1" max="4" step="1">
+      </div>
+
+      <div class="section">
+        <label>Инструмент</label>
+        <div class="toolGrid" id="toolControls">
+          <button type="button" data-tool="source" class="active">Источник</button>
+          <button type="button" data-tool="object">Объект</button>
+          <button type="button" data-tool="insulator">Изолятор</button>
+          <!-- <button type="button" data-tool="cooler">Охладитель</button> -->
+          <button type="button" data-tool="eraser">Стереть</button>
+        </div>
+      </div>
+
+      <div class="buttonGrid">
+        <button id="runBtn" type="button">Пуск</button>
+        <button id="stepBtn" type="button" class="ghost">Шаг</button>
+        <button id="speedBtn" type="button" class="ghost">1x</button>
+        <button id="resetBtn" type="button" class="ghost">Перезапуск</button>
+        <button id="optBtn" type="button" class="ghost wide">Найти оптимум</button>
+        <button id="clearBtn" type="button" class="danger wide">Очистить сцену</button>
+      </div>
+    </aside>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/sim.js"></script>
+  <script src="js/marching.js"></script>
+  <script src="js/thermalPalette.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/temperatureProbe.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
