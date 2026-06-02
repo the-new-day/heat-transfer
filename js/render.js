@@ -166,10 +166,11 @@ function drawObject(){
       const iy = clamp(Math.round(ty), 0, H - 1);
       const i = iy * W + ix;
       const solid = objectMask[i] ? 1 - liquidFraction[i] : 0;
+      if(solid < 0.01){ data[o + 3] = 0; continue; }
       data[o] = 215;
       data[o + 1] = 246;
       data[o + 2] = 255;
-      data[o + 3] = Math.round(cov * (45 + solid * 205));
+      data[o + 3] = Math.round(cov * (50 + solid * 200));
     }
   }
 
