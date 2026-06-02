@@ -173,6 +173,10 @@ function syncInitialControls(){
 function loop(){
   if(simState.running){
     stepSimulation(simState.speed);
+    if(simState.meltedAt === null && massPercent() <= 0.5){
+      simState.meltedAt = simState.elapsed;
+      simState.running = false;
+    }
   }
 
   render();

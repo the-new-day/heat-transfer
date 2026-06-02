@@ -22,7 +22,7 @@ objectCanvas.height = H;
 const octx = objectCanvas.getContext("2d");
 const objectImg = octx.createImageData(W, H);
 
-let heatScale = { min: -7, max: 1000, mid: (1000-7)/2.0 };
+let heatScale = { min: -7, max: 100, mid: (100-7)/2.0 };
 
 function tempColor(temp, range = heatScale){
   const minTemp = range.min;
@@ -255,4 +255,21 @@ function drawMassGraph(){
     else gctx.lineTo(x, y);
   }
   gctx.stroke();
+
+  if(simState.meltedAt !== null){
+    const mx = padL + (simState.meltedAt / maxTime) * plotW;
+    gctx.strokeStyle = "rgba(255, 200, 80, 0.85)";
+    gctx.lineWidth = 1.5;
+    gctx.setLineDash([4, 4]);
+    gctx.beginPath();
+    gctx.moveTo(mx, padT);
+    gctx.lineTo(mx, padT + plotH);
+    gctx.stroke();
+    gctx.setLineDash([]);
+    gctx.fillStyle = "#ffc850";
+    gctx.font = "11px system-ui, sans-serif";
+    gctx.textAlign = "center";
+    gctx.textBaseline = "top";
+    gctx.fillText(`${simState.meltedAt.toFixed(0)} c`, mx, padT + 2);
+  }
 }

@@ -28,6 +28,7 @@ const simState = {
   speed: 1,
   hSolidMax: 0,
   hLiquidMin: 0,
+  meltedAt: null,
 };
 
 const idx = (x, y) => y * W + x;
@@ -244,6 +245,7 @@ function resetSimulation(){
   simState.elapsed = 0;
   simState.timeHistory = [];
   simState.massHistory = [];
+  simState.meltedAt = null;
   updateThermoFields();
   simState.initialMass = Math.max(currentMass(), 1e-12);
   pushHistory();
@@ -363,14 +365,17 @@ function findOptimalPosition(){
   const n = W * H;
   let thermalDist = new Float32Array(n);
   let coolDist = new Float32Array(n);
-  let cost = new Float32Array(n);
+  let thermalCost = new Float32Array(n);
+  let coolCost = new Float32Array(n);
   thermalDist.fill(10000);
   coolDist.fill(10000);
-  cost.fill(1);
+  thermalCost.fill(1);
+  coolCost.fill(1);
 
+  const insulatorCost = simState.material.kLiquid / INSULATOR_MATERIAL.k;
   for(let i = 0; i < n; i++){
-    if(obstacleMask[i] === CELL_INSULATOR) cost[i] = 500;
-    if(obstacleMask[i] === CELL_COOLER) cost[i] = 2;
+    if(obstacleMask[i] === CELL_INSULATOR) coolCost[i] = insulatorCost;
+    if(obstacleMask[i] === CELL_COOLER) coolCost[i] = 2;
   }
 
   for(const source of sourceCells()){
@@ -385,8 +390,8 @@ function findOptimalPosition(){
     }
   }
 
-  thermalDist = relaxDistance(thermalDist, cost, 150);
-  if(hasCooler) coolDist = relaxDistance(coolDist, cost, 150);
+  thermalDist = relaxDistance(thermalDist, thermalCost, 150);
+  if(hasCooler) coolDist = relaxDistance(coolDist, coolCost, 150);
 
   const margin = Math.ceil((simState.objectSize / 2) / DX) + 1;
   let bestScore = -Infinity;
