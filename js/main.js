@@ -3,6 +3,7 @@
 const el = id => document.getElementById(id);
 
 let pointerDown = false;
+let dragPreview = null;
 
 function populateMaterials(){
   const select = el("materialSelect");
@@ -55,7 +56,7 @@ function applyCurrentTool(cell, continuous = false){
       }
       break;
     case "object":
-      moveObjectToCell(cell.x, cell.y);
+      updateDragPreview(cell);
       break;
     case "insulator":
       paintObstacle(cell.x, cell.y, CELL_INSULATOR);
@@ -67,6 +68,13 @@ function applyCurrentTool(cell, continuous = false){
       paintObstacle(cell.x, cell.y, CELL_EMPTY);
       break;
   }
+}
+
+function updateDragPreview(cell){
+  const marginCells = Math.ceil((simState.objectSize / 2) / DX);
+  const cx = clamp(cell.x, marginCells, W - 1 - marginCells);
+  const cy = clamp(cell.y, marginCells, H - 1 - marginCells);
+  dragPreview = { cx, cy, valid: !footprintOverlapsInsulator(cx, cy) };
 }
 
 function wireControls(){
@@ -151,11 +159,18 @@ function wireControls(){
   });
 
   cv.addEventListener("pointerup", event => {
+    if(simState.tool === "object" && dragPreview !== null){
+      if(dragPreview.valid){
+        moveObjectToCell(dragPreview.cx, dragPreview.cy);
+      }
+      dragPreview = null;
+    }
     pointerDown = false;
     cv.releasePointerCapture(event.pointerId);
   });
 
   cv.addEventListener("pointercancel", () => {
+    dragPreview = null;
     pointerDown = false;
   });
 }

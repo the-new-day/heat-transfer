@@ -79,7 +79,7 @@ function render(){
   drawObstacles();
   drawSources();
   drawGrid();
-  drawObjectContour();
+  if(typeof dragPreview === "undefined" || dragPreview === null) drawObjectContour();
   drawMassGraph();
   updateTemperatureLegend(heatScale);
 }
@@ -138,8 +138,14 @@ function drawObject(){
   const rh = H * HEAT_RS;
   const hc = objectHalfCells();
   const visHC = Math.floor(hc + 1e-9) + 0.5;
-  const ocx = Math.round(simState.objectCenter.x * W / LX - 0.5);
-  const ocy = Math.round(simState.objectCenter.y * H / LY - 0.5);
+
+  const preview = typeof dragPreview !== "undefined" ? dragPreview : null;
+  const ocx = preview !== null
+    ? preview.cx
+    : Math.round(simState.objectCenter.x * W / LX - 0.5);
+  const ocy = preview !== null
+    ? preview.cy
+    : Math.round(simState.objectCenter.y * H / LY - 0.5);
 
   for(let py = 0; py < rh; py++){
     for(let px = 0; px < rw; px++){
@@ -157,20 +163,26 @@ function drawObject(){
       }
 
       const o = (py * rw + px) * 4;
-      if(cov < 0.004){
-        data[o + 3] = 0;
-        continue;
-      }
+      if(cov < 0.004){ data[o + 3] = 0; continue; }
 
-      const ix = clamp(Math.round(tx), 0, W - 1);
-      const iy = clamp(Math.round(ty), 0, H - 1);
-      const i = iy * W + ix;
-      const solid = objectMask[i] ? 1 - liquidFraction[i] : 0;
-      if(solid < 0.01){ data[o + 3] = 0; continue; }
-      data[o] = 215;
-      data[o + 1] = 246;
-      data[o + 2] = 255;
-      data[o + 3] = Math.round(cov * (50 + solid * 200));
+      if(preview !== null){
+        if(preview.valid){
+          data[o] = 215; data[o + 1] = 246; data[o + 2] = 255;
+        } else {
+          data[o] = 220; data[o + 1] = 55; data[o + 2] = 55;
+        }
+        data[o + 3] = Math.round(cov * 150);
+      } else {
+        const ix = clamp(Math.round(tx), 0, W - 1);
+        const iy = clamp(Math.round(ty), 0, H - 1);
+        const i = iy * W + ix;
+        const solid = objectMask[i] ? 1 - liquidFraction[i] : 0;
+        if(solid < 0.01){ data[o + 3] = 0; continue; }
+        data[o] = 215;
+        data[o + 1] = 246;
+        data[o + 2] = 255;
+        data[o + 3] = Math.round(cov * (50 + solid * 200));
+      }
     }
   }
 

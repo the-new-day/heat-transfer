@@ -228,8 +228,14 @@ function pushHistory(){
   simState.massHistory.push(percent);
 
   if(simState.timeHistory.length > 900){
-    simState.timeHistory.shift();
-    simState.massHistory.shift();
+    const tNew = [simState.timeHistory[0]];
+    const mNew = [simState.massHistory[0]];
+    for(let i = 2; i < simState.timeHistory.length; i += 2){
+      tNew.push(simState.timeHistory[i]);
+      mNew.push(simState.massHistory[i]);
+    }
+    simState.timeHistory = tNew;
+    simState.massHistory = mNew;
   }
 }
 
@@ -331,10 +337,28 @@ function addSourceAtCell(x, y){
   calculateSources();
 }
 
+function footprintOverlapsInsulator(cx, cy){
+  const hc = objectHalfCells();
+  const hc2 = hc * hc;
+  for(let y = 0; y < H; y++){
+    for(let x = 0; x < W; x++){
+      const dx = x - cx;
+      const dy = y - cy;
+      const inside = simState.objectShape === "square"
+        ? Math.abs(dx) <= hc + 1e-9 && Math.abs(dy) <= hc + 1e-9
+        : dx * dx + dy * dy <= hc2 + 1e-9;
+      if(!inside) continue;
+      if(obstacleMask[idx(x, y)] === CELL_INSULATOR) return true;
+    }
+  }
+  return false;
+}
+
 function moveObjectToCell(x, y){
   const marginCells = Math.ceil((simState.objectSize / 2) / DX);
   const cx = clamp(x, marginCells, W - 1 - marginCells);
   const cy = clamp(y, marginCells, H - 1 - marginCells);
+  if(footprintOverlapsInsulator(cx, cy)) return;
   simState.objectCenter = { x: cellCenterX(cx), y: cellCenterY(cy) };
   resetSimulation();
 }
@@ -349,6 +373,7 @@ function paintObstacle(cx, cy, type){
       if((x - cx) ** 2 + (y - cy) ** 2 > r ** 2 + 0.75) continue;
 
       const i = idx(x, y);
+      if(objectMask[i] && type !== CELL_EMPTY) continue;
       if(obstacleMask[i] !== type){
         const currentTemp = T ? tempFromCellEnthalpy(i) : simState.material.meltTemp + simState.ambientDelta;
         obstacleMask[i] = type;
