@@ -32,8 +32,8 @@ const TOOLS = {
 };
 
 const INSULATOR_MATERIAL = {
-  rho: 160.0,
-  cp: 1100.0,
+  rho: 500.0,
+  cp: 2000.0,
   k: 0.045,
 };
 
