@@ -10,11 +10,12 @@ graph.width = 320;
 graph.height = 230;
 const gctx = graph.getContext("2d");
 
+const HEAT_RS = 4;
 const fieldCanvas = document.createElement("canvas");
-fieldCanvas.width = W;
-fieldCanvas.height = H;
+fieldCanvas.width = W * HEAT_RS;
+fieldCanvas.height = H * HEAT_RS;
 const fctx = fieldCanvas.getContext("2d");
-const fieldImg = fctx.createImageData(W, H);
+const fieldImg = fctx.createImageData(W * HEAT_RS, H * HEAT_RS);
 
 const objectCanvas = document.createElement("canvas");
 objectCanvas.width = W;
@@ -85,17 +86,38 @@ function render(){
 
 function drawHeatField(range){
   const data = fieldImg.data;
-  for(let i = 0; i < W * H; i++){
-    const [r, g, b] = tempColor(T[i], range);
-    const o = i * 4;
-    data[o] = r;
-    data[o + 1] = g;
-    data[o + 2] = b;
-    data[o + 3] = 255;
+  const rw = W * HEAT_RS;
+  const rh = H * HEAT_RS;
+
+  for(let py = 0; py < rh; py++){
+    for(let px = 0; px < rw; px++){
+      const tx = (px + 0.5) / HEAT_RS - 0.5;
+      const ty = (py + 0.5) / HEAT_RS - 0.5;
+      const x0 = Math.floor(tx);
+      const y0 = Math.floor(ty);
+      const fx = tx - x0;
+      const fy = ty - y0;
+      const cx0 = clamp(x0, 0, W - 1);
+      const cx1 = clamp(x0 + 1, 0, W - 1);
+      const cy0 = clamp(y0, 0, H - 1);
+      const cy1 = clamp(y0 + 1, 0, H - 1);
+      const temp =
+        T[cy0 * W + cx0] * (1 - fx) * (1 - fy) +
+        T[cy0 * W + cx1] * fx * (1 - fy) +
+        T[cy1 * W + cx0] * (1 - fx) * fy +
+        T[cy1 * W + cx1] * fx * fy;
+      const [r, g, b] = tempColor(temp, range);
+      const o = (py * rw + px) * 4;
+      data[o] = r;
+      data[o + 1] = g;
+      data[o + 2] = b;
+      data[o + 3] = 255;
+    }
   }
 
   fctx.putImageData(fieldImg, 0, 0);
   ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
   ctx.drawImage(fieldCanvas, 0, 0, cv.width, cv.height);
 }
 
